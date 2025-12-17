@@ -1,0 +1,115 @@
+{% if end_date != blank %}
+<div class="timer">
+  {% if title != blank %}
+    <span class="timer__title h3">{{ title }}</span>
+  {% endif %}
+  <div class="timer-display h3">
+    <div class="timer-block">
+      <span class="timer-block__num js-timer-days">00</span>
+      <span class="timer-block__unit">d </span>
+    </div>
+    <div class="timer-block">
+      <span class="timer-block__num js-timer-hours">00</span>
+      <span class="timer-block__unit">h </span>
+    </div>
+    <div class="timer-block">
+      <span class="timer-block__num js-timer-minutes">00</span>
+      <span class="timer-block__unit">m </span>
+    </div>
+    <div class="timer-block">
+      <span class="timer-block__num js-timer-seconds">00</span>
+      <span class="timer-block__unit">s </span>
+    </div>
+  </div>
+</div>
+<style>
+/* styles for timer */
+  .timer {
+    background: transparent;
+		display: flex;
+  }
+  .timer--expired {
+    display: none;
+  }
+  .timer__title {
+    @extend .paragraph;
+    text-align: center;
+		margin: 10px 10px 0 0;
+  }
+  .timer-display {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+		margin-top: 10px;
+  }
+  .timer-block {
+		display: flex;
+    position: relative;
+    padding: 0 5px;
+    &:not(:last-child):after {
+      content: ':';
+      position: absolute;
+      right: 0;
+    }
+  }
+  .timer-block__num,
+  .timer-block__unit {
+    display: block;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 460px) {
+    .timer {
+      display: block;
+    }
+    .timer-display {
+      justify-content: center;
+    }
+  }
+
+	@media screen and (max-width: 425px) {
+		.timer-display {
+			align-items: center;
+		}
+		
+	}
+  
+	@media screen and (max-width: 424px){
+		.timer__title {
+			margin: 10px 5px 0 0;
+		}
+		.timer-display {
+			justify-content: initial;
+		}
+		.timer-block {
+			padding: 0 3px 0 0;
+		}
+	}
+
+	@media screen and (max-width: 320px) {
+		.timer__title, .timer-display {
+			font-size: 13px;
+		}
+	}
+</style>
+<script type="text/javascript">
+  var second = 1000,
+      minute = second * 60,
+      hour = minute * 60,
+      day = hour * 24;
+  var countDown = new Date('{{- end_date -}}').getTime(),
+      x = setInterval(function() {
+      var now = new Date().getTime(),
+          distance = countDown - now;
+      document.querySelector('.js-timer-days').innerText = Math.floor(distance / (day)),
+        document.querySelector('.js-timer-hours').innerText = Math.floor((distance % (day)) / (hour)),
+      document.querySelector('.js-timer-minutes').innerText = Math.floor((distance % (hour)) / (minute)),
+      document.querySelector('.js-timer-seconds').innerText = Math.floor((distance % (minute)) / second);
+    }, second)
+</script>
+{% endif %}

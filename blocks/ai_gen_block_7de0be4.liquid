@@ -1,0 +1,94 @@
+{% doc %}
+  @prompt
+    Hide the page title only on the Showroom page by adding CSS that targets this specific page template or handle, leaving titles visible on all other pages
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-page-title-hider-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  {% comment %} Target the showroom page template {% endcomment %}
+  .template-page.page-showroom .main-page-title,
+  .template-page.page-showroom .page-title,
+  .template-page.page-showroom h1.title,
+  .template-page.page-showroom .page-header h1,
+  .template-page.page-showroom .page-header .title {
+    display: none !important;
+  }
+
+  {% comment %} Also target by page handle if available {% endcomment %}
+  body[data-page-handle="showroom"] .main-page-title,
+  body[data-page-handle="showroom"] .page-title,
+  body[data-page-handle="showroom"] h1.title,
+  body[data-page-handle="showroom"] .page-header h1,
+  body[data-page-handle="showroom"] .page-header .title {
+    display: none !important;
+  }
+
+  {% comment %} Additional targeting for common page title patterns {% endcomment %}
+  .template-page.page-showroom .page__title,
+  .template-page.page-showroom .content-header h1,
+  .template-page.page-showroom .section-header h1,
+  body[data-page-handle="showroom"] .page__title,
+  body[data-page-handle="showroom"] .content-header h1,
+  body[data-page-handle="showroom"] .section-header h1 {
+    display: none !important;
+  }
+
+  {% comment %} Custom selector if merchant specifies different class {% endcomment %}
+  {% if block.settings.custom_selector != blank %}
+    .template-page.page-showroom {{ block.settings.custom_selector }},body[data-page-handle="showroom"] {{ block.settings.custom_selector }} {
+      display: none !important;
+    }
+  {% endif %}
+{% endstyle %}
+
+<div class="ai-page-title-hider-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if template.name == 'page' and page.handle == 'showroom' %}
+    <div style="padding: 10px; background: #f0f8ff; border: 1px solid #d0e7ff; border-radius: 4px; font-size: 14px; color: #0066cc; margin: 10px 0;">✓ Page title is hidden on the Showroom page
+    </div>
+  {% else %}
+    <div style="padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; color: #666; margin: 10px 0;">
+      This block hides the page title only on the Showroom page. Page titles remain visible on all other pages.
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Hide showroom page title",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Page title hiding"
+    },
+    {
+      "type": "paragraph",
+      "content": "This block automatically hides the page title only on the Showroom page, leaving titles visible on all other pages."
+    },
+    {
+      "type": "text",
+      "id": "custom_selector",
+      "label": "Custom title selector",
+      "info": "Optional: Add a custom CSS selector if your theme uses a different class for page titles (e.g., '.custom-page-title')"
+    },
+    {
+      "type": "header",
+      "content": "How it works"
+    },
+    {
+      "type": "paragraph",
+      "content": "The block targets common page title selectors and applies display: none only when on the showroom page template or when the page handle is 'showroom'."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hide showroom page title"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

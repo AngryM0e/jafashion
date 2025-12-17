@@ -1,0 +1,129 @@
+<div class="custom-orders">
+  <h1 class="jah1 align-center-t">CUSTOM ORDERS</h1>
+  <div class="jacontainer-outer">
+    <div class="jacontainer-inner">
+      <div class="info__block">
+        <p class="jatext mb25">For custom jewelry and diamond orders, please send us your requests directly. All jewelry pieces can be made according to your preference.
+        </p>
+        <p class="jatext">
+          We offer 14k to 24k solid gold pieces along with diamonds in various cut, color, clarity, and carats.
+        </p>
+        <p class="jatext height100">
+          Contact our expert jeweler today to create your timeless perfection piece!
+        </p>
+        {% include 'my-popup' %}
+      </div>
+      <div class="info__block pd-0 ml20">
+        <div class="grid-custom">
+          <div class="grid-custom-1">
+            <img src="https://cdn.shopify.com/s/files/1/0569/1500/1476/files/1_-min_5e7987c5-dc5e-493a-943b-9e81bb07545b.jpg?v=1762460085" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jacontainer-outer">
+    <div class="jacontainer-inner">
+      <div class="jainsta-wrapper flex-dir-col align-items-center">
+        <div class="jainsta-grid mb25">
+          <div class="sm-1"><img
+              class="img-cover"
+              src="https://cdn.shopify.com/s/files/1/0569/1500/1476/files/4_-1-min.jpg?v=1762415647"
+              alt="">
+          </div>
+          <div class="sm-2"><img
+              class="img-cover"
+              src="https://cdn.shopify.com/s/files/1/0569/1500/1476/files/4_-2-min.jpg?v=1762415647"
+              alt="">
+          </div>
+          <div class="md-1"><img
+              class="img-cover"
+              src="https://cdn.shopify.com/s/files/1/0569/1500/1476/files/4_-_3-min.jpg?v=1762415647"
+              alt="">
+          </div>
+          <div class="sm-3"><img
+              class="img-cover"
+              src="https://cdn.shopify.com/s/files/1/0569/1500/1476/files/4_-4-min.jpg?v=1762415647"
+              alt="">
+          </div>
+          <div class="sm-4"><img
+              class="img-cover"
+              src="https://cdn.shopify.com/s/files/1/0569/1500/1476/files/4_-_5-min.jpg?v=1762415646"
+              alt="">
+          </div>
+          <div class="md-2"><img
+              class="img-cover"
+              src="https://cdn.shopify.com/s/files/1/0569/1500/1476/files/4_-_6-min.jpg?v=1762415647"
+              alt="">
+          </div>
+        </div>
+        <div class="jabutton jabutton-grey wd50">
+          <a href="https://instagram.com/jafandco?igshid=MzRlODBiNWFlZA==">SUBSCRIBE @JAFANDCO</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .grid-custom {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 0 0;
+    grid-auto-flow: row;
+    grid-template-areas: "grid-custom-1";
+    overflow: hidden;
+  }
+
+  .grid-custom div {
+    overflow: hidden;
+  }
+
+  .grid-custom img {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .grid-custom-1 {
+    grid-area: grid-custom-1;
+  }
+
+  .jainsta-wrapper {
+    margin: 0 auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .custom-orders .contact__fields {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-column-gap: 2rem;
+    }
+    .custom-orders .field {
+      margin-bottom: 2rem;
+    }
+  }
+
+
+  @media screen and (max-width: 768px) {
+    .custom-orders > .jacontainer-outer {
+      padding-bottom: 0;
+    }
+
+    .custom-orders .jacontainer-inner {
+      display: block;
+    }
+
+    .custom-orders a {
+      margin-top: 25px;
+    }
+
+    .grid-custom {
+      height: 100vh;
+    }
+  }
+</style>

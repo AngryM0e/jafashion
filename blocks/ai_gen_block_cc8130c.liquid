@@ -1,0 +1,332 @@
+{% doc %}
+  @prompt
+    Create a Liquid code block that conditionally hides Shop Pay payment buttons on specific product pages based on product handle, tags, or other product attributes. The code should allow merchants to specify which products should not display Shop Pay while keeping it available on all other products.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-shop-pay-controller-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay {
+    display: block;
+  }
+
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay + * [data-shopify="payment-button"],
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * [data-shopify="payment-button"],
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * .shopify-payment-button,
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * .dynamic-checkout__content,
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * [data-testid="payment-button"],
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * [data-testid="Checkout-button"] {
+    display: none !important;
+  }
+
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay + * .shopify-payment-button__button,
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * .shopify-payment-button__button,
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * .shopify-payment-button__more-options,
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * .dynamic-checkout__content > *,
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * [data-shop-pay-button],
+  .ai-shop-pay-controller-{{ ai_gen_id }}.hide-shop-pay ~ * [data-payment-button] {
+    display: none !important;
+  }
+
+  .ai-shop-pay-status-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    background-color: {{ block.settings.status_background_color }};
+    color: {{ block.settings.status_text_color }};
+    border-radius: {{ block.settings.status_border_radius }}px;
+    font-size: 14px;
+    margin: 10px 0;
+    border-left: 4px solid {{ block.settings.status_accent_color }};
+  }
+
+  .ai-shop-pay-status-{{ ai_gen_id }}.hidden {
+    display: none;
+  }
+
+  .ai-shop-pay-debug-{{ ai_gen_id }} {
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #6c757d;
+    margin: 8px 0;
+    font-family: monospace;
+  }
+
+  .ai-shop-pay-debug-{{ ai_gen_id }}.hidden {
+    display: none;
+  }
+{% endstyle %}
+
+<shop-pay-controller-{{ ai_gen_id }}
+  class="ai-shop-pay-controller-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+  data-product-handle="{{ product.handle }}"
+  data-product-id="{{ product.id }}"
+  data-product-tags="{{ product.tags | join: ',' }}"
+  data-product-type="{{ product.type }}"
+  data-product-vendor="{{ product.vendor }}"
+  data-hide-handles="{{ block.settings.hide_handles }}"
+  data-hide-tags="{{ block.settings.hide_tags }}"
+  data-hide-types="{{ block.settings.hide_types }}"
+  data-hide-vendors="{{ block.settings.hide_vendors }}"
+  data-hide-ids="{{ block.settings.hide_ids }}"
+  data-show-status="{{ block.settings.show_status }}"
+  data-show-debug="{{ block.settings.show_debug }}"
+>
+  {% if block.settings.show_status %}
+    <div class="ai-shop-pay-status-{{ ai_gen_id }} hidden" id="ai-shop-pay-status-{{ ai_gen_id }}">
+      {{ block.settings.status_message }}
+    </div>
+  {% endif %}
+
+  {% if block.settings.show_debug %}
+    <div class="ai-shop-pay-debug-{{ ai_gen_id }}" id="ai-shop-pay-debug-{{ ai_gen_id }}">
+      <strong>Shop Pay Controller Debug:</strong><br>
+      Product Handle: {{ product.handle }}<br>
+      Product ID: {{ product.id }}<br>
+      Product Tags: {{ product.tags | join: ', ' }}<br>
+      Product Type: {{ product.type }}<br>
+      Product Vendor: {{ product.vendor }}<br>
+      Status: <span id="ai-debug-status-{{ ai_gen_id }}">Checking...</span>
+    </div>
+  {% endif %}
+</shop-pay-controller-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ShopPayController{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.productHandle = this.dataset.productHandle;
+        this.productId = this.dataset.productId;
+        this.productTags = this.dataset.productTags.split(',').map(tag => tag.trim()).filter(tag => tag);
+        this.productType = this.dataset.productType;
+        this.productVendor = this.dataset.productVendor;
+        
+        this.hideHandles = this.dataset.hideHandles.split(',').map(handle => handle.trim()).filter(handle => handle);
+        this.hideTags = this.dataset.hideTags.split(',').map(tag => tag.trim()).filter(tag => tag);
+        this.hideTypes = this.dataset.hideTypes.split(',').map(type => type.trim()).filter(type => type);
+        this.hideVendors = this.dataset.hideVendors.split(',').map(vendor => vendor.trim()).filter(vendor => vendor);
+        this.hideIds = this.dataset.hideIds.split(',').map(id => id.trim()).filter(id => id);
+        
+        this.showStatus = this.dataset.showStatus === 'true';
+        this.showDebug = this.dataset.showDebug === 'true';
+      }
+
+      connectedCallback() {
+        this.checkAndHideShopPay();
+        this.observePaymentButtons();
+      }
+
+      checkAndHideShopPay() {
+        const shouldHide = this.shouldHideShopPay();
+        if (shouldHide) {
+          this.classList.add('hide-shop-pay');
+          this.showStatusMessage();
+        } else {
+          this.classList.remove('hide-shop-pay');
+          this.hideStatusMessage();
+        }
+
+        if (this.showDebug) {
+          this.updateDebugInfo(shouldHide);
+        }
+      }
+
+      shouldHideShopPay() {
+        if (this.hideHandles.includes(this.productHandle)) {
+          return true;
+        }
+
+        if (this.hideIds.includes(this.productId)) {
+          return true;
+        }
+
+        if (this.hideTypes.length > 0 && this.hideTypes.includes(this.productType)) {
+          return true;
+        }
+
+        if (this.hideVendors.length > 0 && this.hideVendors.includes(this.productVendor)) {
+          return true;
+        }
+
+        if (this.hideTags.length > 0) {
+          for (const hideTag of this.hideTags) {
+            if (this.productTags.includes(hideTag)) {
+              return true;
+            }
+          }
+        }
+
+        return false;
+      }
+
+      showStatusMessage() {
+        if (this.showStatus) {
+          const statusElement = this.querySelector('#ai-shop-pay-status-{{ ai_gen_id }}');
+          if (statusElement) {
+            statusElement.classList.remove('hidden');
+          }
+        }
+      }
+
+      hideStatusMessage() {
+        if (this.showStatus) {
+          const statusElement = this.querySelector('#ai-shop-pay-status-{{ ai_gen_id }}');
+          if (statusElement) {
+            statusElement.classList.add('hidden');
+          }
+        }
+      }
+
+      updateDebugInfo(shouldHide) {
+        const debugStatus = this.querySelector('#ai-debug-status-{{ ai_gen_id }}');
+        if (debugStatus) {
+          debugStatus.textContent = shouldHide ? 'Shop Pay Hidden' : 'Shop Pay Visible';
+          debugStatus.style.color = shouldHide ? '#dc3545' : '#28a745';
+        }
+      }
+
+      observePaymentButtons() {
+        const observer = new MutationObserver(() => {
+          this.checkAndHideShopPay();
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class', 'data-shopify', 'data-testid']
+        });
+
+        setTimeout(() => {
+          this.checkAndHideShopPay();
+        }, 1000);
+
+        setTimeout(() => {
+          this.checkAndHideShopPay();
+        }, 3000);
+      }
+    }
+
+    customElements.define('shop-pay-controller-{{ ai_gen_id }}', ShopPayController{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shop Pay controller",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hide Shop Pay by product handle"
+    },
+    {
+      "type": "textarea",
+      "id": "hide_handles",
+      "label": "Product handles",
+      "info": "Enter product handles separated by commas. Shop Pay will be hidden on these products.",
+      "placeholder": "product-handle-1, product-handle-2"
+    },
+    {
+      "type": "header",
+      "content": "Hide Shop Pay by product attributes"
+    },
+    {
+      "type": "textarea",
+      "id": "hide_tags",
+      "label": "Product tags",
+      "info": "Enter product tags separated by commas. Shop Pay will be hidden on products with any of these tags.",
+      "placeholder": "no-shop-pay, custom-order"
+    },
+    {
+      "type": "textarea",
+      "id": "hide_types",
+      "label": "Product types",
+      "info": "Enter product types separated by commas. Shop Pay will be hidden on products of these types.",
+      "placeholder": "Gift Card, Custom Order"
+    },
+    {
+      "type": "textarea",
+      "id": "hide_vendors",
+      "label": "Product vendors",
+      "info": "Enter vendor names separated by commas. Shop Pay will be hidden on products from these vendors.",
+      "placeholder": "Vendor 1, Vendor 2"
+    },
+    {
+      "type": "textarea",
+      "id": "hide_ids",
+      "label": "Product IDs",
+      "info": "Enter product IDs separated by commas. Shop Pay will be hidden on these specific products.",
+      "placeholder": "1234567890, 0987654321"
+    },
+    {
+      "type": "header",
+      "content": "Status display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_status",
+      "label": "Show status message",
+      "info": "Display a message when Shop Pay is hidden",
+      "default": false
+    },
+    {
+      "type": "richtext",
+      "id": "status_message",
+      "label": "Status message",
+      "default": "<p>Express checkout options are not available for this product.</p>"
+    },
+    {
+      "type": "color",
+      "id": "status_background_color",
+      "label": "Status background color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "status_text_color",
+      "label": "Status text color",
+      "default": "#6c757d"
+    },
+    {
+      "type": "color",
+      "id": "status_accent_color",
+      "label": "Status accent color",
+      "default": "#007bff"
+    },
+    {
+      "type": "range",
+      "id": "status_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Status border radius",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Debug mode"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_debug",
+      "label": "Show debug information",
+      "info": "Display debug information to help troubleshoot the Shop Pay controller",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop Pay controller"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

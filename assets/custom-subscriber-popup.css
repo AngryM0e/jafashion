@@ -1,0 +1,201 @@
+#customNewsletter {
+  position: fixed;
+	align-items: center;
+	justify-content: center;
+  top: 0; /* required */
+  width: 100%;
+  height: 100vh;
+  background: rgba(124, 124, 124, 0.5);
+  display: none;
+  justify-content: center;
+  z-index: 990;
+}
+
+.customNewsletter__container {
+	
+  width: 66%;
+  height: 60%;
+  background-color: #F5FBFF;
+  position: relative;
+  max-width: 90%;
+	border-radius: 2px;
+	padding: 25px;
+}
+
+.customNewsletter__block {
+    width: 50%;
+}
+
+.customNewsletter__block-logo {
+  display: flex;
+  justify-content: center;
+	overflow: hidden;
+}
+
+.customNewsletter__block-logo {
+  display: flex;
+  justify-content: center;
+}
+
+.customNewsletter__block-logo{
+	content: "";
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url("https://jafashionco.com/cdn/shop/files/subs-popup.jpg?v=1719501666");
+}
+
+.customNewsletter__block-logo--success{
+	content: "";
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url("https://cdn.shopify.com/s/files/1/0569/1500/1476/files/sub-pop-desk-scs.jpg?v=1719850779");
+}
+
+
+.customNewsletter__block-text {
+  text-align: center;
+}
+
+
+.customNewsletter__block-text > div {
+	height: 50%;
+}
+
+.customNewsletter__text {
+	display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.custom__newsletter-open {
+	overflow-y: hidden;
+}
+
+
+.custom__newsletter-close {
+	overflow-y: visible;
+}
+
+#customNewsletter__close {
+	position: absolute;
+  display: block;
+	top:  1vh;
+	right: 1vh;
+  font-weight: bold;
+  border: transparent;
+  background-color: transparent;
+  font-size: 4vw;
+  color: #00129a;
+}
+
+.popupNewsletter__close {
+	z-index: 999;
+}
+
+
+.customNewsLetter-none {
+	display: none;
+}
+
+.subssucs {
+	border: 1px solid red;
+}
+
+.custom__newsletter-form {
+	display: flex;
+  width: 100%;
+	height: 100%;
+  position: relative;
+  margin: 0 auto;	
+	gap: 50px
+}
+
+.newsletter-form__field-wrapper {
+	display: flex;
+  flex-direction: column;
+	height: inherit;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.newsletter-form__field-wrapper .field__input {
+    padding-right: 5rem;
+    border: 2px solid #00129a;
+}
+
+@media screen and (max-width: 1024px) {
+	.customNewsletter__container {
+		max-width: 80%;
+	}
+}
+
+@media screen and (max-width: 768px) {
+
+	.customNewsletter__container {
+		height: 60vh;
+		justify-content: center;
+    align-items: center;
+		padding: 0px;
+	}
+	
+	.customNewsletter__block-logo {
+		position: absolute;
+		top: 0;
+    max-width: 100%;
+    height: 100%;
+    width: 100% !important; 
+	}
+
+	.customNewsletter__block-logo::before {
+		content: "";
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3));
+	}
+
+	.customNewsletter__block-logo{
+	background-image: url("https://cdn.shopify.com/s/files/1/0569/1500/1476/files/subs-mob.jpg?v=1719923640");
+}
+
+.customNewsletter__block-logo--success{
+	background-image: url("https://cdn.shopify.com/s/files/1/0569/1500/1476/files/subs-mob-scs.jpg?v=1719923640");
+}
+
+	.customNewsletter__block-text {
+		z-index: 991;
+		width: 100%;
+		padding: 25px;
+	}
+
+	.customNewsletter__block-text .newsletter-form__field-wrapper {
+		max-width: 100%;
+	}
+
+	.customNewsletter__text {
+		z-index: 999;
+		width:  100% !important;
+		height: 100%;
+	}
+
+}
+
+@media screen and (max-width: 425px) {
+	.customNewsletter__block-logo {
+    background-position-x: right;
+	}
+	.customNewsletter__block-logo--success {
+		background-position-x: left;
+	}
+}
+
+
+
+
+
+@media only screen and (min-width: 600px) {
+  #customNewsletter__close {
+    font-size: 2rem;
+  }
+}
